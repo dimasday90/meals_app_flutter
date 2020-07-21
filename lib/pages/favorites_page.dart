@@ -15,18 +15,11 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   List<Meal> _favorites = [];
-  // bool _loadedInitData = false;
 
   @override
   void initState() {
     _favorites = widget.favoritedMeals;
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    _favorites = widget.favoritedMeals;
-    super.didChangeDependencies();
   }
 
   Widget _buildEmptyFavorites() {
