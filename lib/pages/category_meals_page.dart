@@ -1,38 +1,76 @@
 import 'package:flutter/material.dart';
 
-import '../categories_meals_data.dart';
 import '../widgets/meal_item.dart';
 
-class CategoryMealsPage extends StatelessWidget {
+import '../models/meal.dart';
+
+class CategoryMealsPage extends StatefulWidget {
   static const routeName = '/category-meals';
+
+  final List<Meal> availableMeals;
+
+  CategoryMealsPage(this.availableMeals);
+
+  @override
+  _CategoryMealsPageState createState() => _CategoryMealsPageState();
+}
+
+class _CategoryMealsPageState extends State<CategoryMealsPage> {
+  String _categoryTitle;
+  List<Meal> _displayedMeals;
+  bool _loadedInitData = false;
+
+  @override
+  void didChangeDependencies() {
+    if (!_loadedInitData) {
+      final routeArgs =
+          ModalRoute.of(context).settings.arguments as Map<String, String>;
+      _categoryTitle = routeArgs['title'];
+      final categoryId = routeArgs['id'];
+      _displayedMeals = widget.availableMeals.where((meal) {
+        return meal.categories.contains(categoryId);
+      }).toList();
+      _loadedInitData = true;
+    }
+    super.didChangeDependencies();
+  }
+
+  Widget _buildEmptyMealList() {
+    return Center(
+      child: Text(
+        'No meals available due to filter results',
+        style: Theme.of(context).textTheme.headline6,
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildAvailableMealList() {
+    return ListView.builder(
+      itemBuilder: (context, index) {
+        return MealItem(
+          id: _displayedMeals[index].id,
+          title: _displayedMeals[index].title,
+          duration: _displayedMeals[index].duration,
+          imageUrl: _displayedMeals[index].imageUrl,
+          complexity: _displayedMeals[index].complexity,
+          affordability: _displayedMeals[index].affordability,
+        );
+      },
+      itemCount: _displayedMeals.length,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final routeArgs =
-        ModalRoute.of(context).settings.arguments as Map<String, String>;
-    // final categoryId = routeArgs['id'];
-    final categoryTitle = routeArgs['title'];
-    final categoryId = routeArgs['id'];
-    final categoryMeals = DUMMY_MEALS.where((meal) {
-      return meal.categories.contains(categoryId);
-    }).toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(categoryTitle),
+        title: Text(_categoryTitle),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            return MealItem(
-              id: categoryMeals[index].id,
-              title: categoryMeals[index].title,
-              duration: categoryMeals[index].duration,
-              imageUrl: categoryMeals[index].imageUrl,
-              complexity: categoryMeals[index].complexity,
-              affordability: categoryMeals[index].affordability,
-            );
-          },
-          itemCount: categoryMeals.length,
-        ),
+        child: _displayedMeals.isEmpty
+            ? _buildEmptyMealList()
+            : _buildAvailableMealList(),
       ),
     );
   }
