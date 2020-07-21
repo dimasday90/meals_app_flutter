@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class MainDrawer extends StatelessWidget {
+  final Map<String, bool> filters;
+  final Function filterHandler;
+
+  MainDrawer({this.filterHandler, this.filters});
+
   Widget buildDrawerListTile(String title, IconData icon, Function tapHandler) {
     return ListTile(
       leading: Icon(
@@ -46,10 +51,11 @@ class MainDrawer extends StatelessWidget {
             height: 20,
           ),
           buildDrawerListTile('Meals', Icons.restaurant, () {
-            navigator.pushNamed('/');
+            filterHandler(filters);
+            navigator.pushReplacementNamed('/');
           }),
           buildDrawerListTile('Settings', Icons.settings, () {
-            navigator.pushNamed('/settings');
+            navigator.pushReplacementNamed('/settings');
           }),
         ],
       ),
