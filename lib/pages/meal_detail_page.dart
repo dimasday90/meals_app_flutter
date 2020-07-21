@@ -4,6 +4,13 @@ import '../categories_meals_data.dart';
 
 class MealDetailPage extends StatelessWidget {
   static const routeName = '/meal-detail';
+  final Function toggleFavorite;
+  final Function isFavorite;
+
+  MealDetailPage({
+    this.toggleFavorite,
+    this.isFavorite,
+  });
 
   Widget buildSliverSubHeadline(ThemeData mainTheme, String title) {
     return SliverToBoxAdapter(
@@ -52,25 +59,34 @@ class MealDetailPage extends StatelessWidget {
     final ThemeData mainTheme = Theme.of(context);
     final mealId = ModalRoute.of(context).settings.arguments as String;
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
-
     final sliverAppBar = SliverAppBar(
       expandedHeight: mediaQuery.size.height * 0.33,
       floating: false,
       pinned: true,
       snap: false,
       flexibleSpace: FlexibleSpaceBar(
-          title: Text(
-            selectedMeal.title,
-            overflow: TextOverflow.fade,
-            softWrap: true,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
+        title: Text(
+          selectedMeal.title,
+          overflow: TextOverflow.fade,
+          softWrap: true,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
           ),
-          background: Image.network(
-            selectedMeal.imageUrl,
-            fit: BoxFit.cover,
-          )),
+        ),
+        background: Image.network(
+          selectedMeal.imageUrl,
+          fit: BoxFit.cover,
+        ),
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: Icon(
+            isFavorite(mealId) ? Icons.star : Icons.star_border,
+          ),
+          onPressed: () => toggleFavorite(mealId),
+          tooltip: 'Add to favorites',
+        ),
+      ],
     );
 
     return Scaffold(
